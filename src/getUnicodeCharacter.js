@@ -38,13 +38,14 @@ const getUnicodeCharacter = (hex, nextIndex, type) => {
 };
 
 const getRegexForUnicode = (type, hex) => {
-    switch (type) {
-        case "unicodeExtended":
-            return `\\u{${hex}}`;
-        case "unicode":
-            return `\\u${hex}`;
+    switch (type) {        
         case "hexadecimal":
             return  `\\x${hex}`;
+        case "unicode":
+            return `\\u${hex}`;
+        case "unicodeExtended":
+            return `\\u{${hex}}`;
+
         default:
             throw new Error("This function is only configured to work with unicode and hex");
     }
