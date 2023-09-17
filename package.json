@@ -1,0 +1,48 @@
+{
+    "author": "Amy Shackles",
+    "name": "regex-lexer",
+    "version": "1.0.0",
+    "description": "Regex Lexer",
+    "main": "src/index.js",
+    "scripts": {
+        "test": "jest",
+        "test:coverage": "npm test --coverage",
+        "prepare": "husky install"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/AmyShackles/regex-lexer.git"
+    },
+    "keywords": [
+        "regex",
+        "javascript"
+    ],
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/AmyShackles/regex-lexer/issues"
+    },
+    "homepage": "https://github.com/AmyShackles/regex-lexer#readme",
+    "devDependencies": {
+        "eslint": "^8.49.0",
+        "eslint-config-prettier": "^9.0.0",
+        "eslint-plugin-jest": "^27.4.0",
+        "husky": "^8.0.3",
+        "jest": "^29.7.0",
+        "lint-staged": "^14.0.1",
+        "prettier": "^3.0.3"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "lint-staged": {
+        "*.js": [
+            "eslint",
+            "prettier"
+        ]
+    },
+    "prettier": {
+        "tabWidth": 4
+    }
+}
