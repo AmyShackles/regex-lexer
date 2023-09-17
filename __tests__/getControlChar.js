@@ -341,7 +341,41 @@ describe("getControlChar", () => {
     });
 });
 describe("getControlCharacterType", () => {
-    test("should return the next index and token for control characters", () => {
+    test("should return the correct control character", () => {
+        expect(getControlCharacterType(0)).toEqual("NUL");
+        expect(getControlCharacterType(1)).toEqual("startOfHeading");
+        expect(getControlCharacterType(2)).toEqual("startOfText");
+        expect(getControlCharacterType(3)).toEqual("endOfText");
+        expect(getControlCharacterType(4)).toEqual("endOfTransmit");
+        expect(getControlCharacterType(5)).toEqual("enquiry");
+        expect(getControlCharacterType(6)).toEqual("acknowledge");
+        expect(getControlCharacterType(7)).toEqual("bell");
+        expect(getControlCharacterType(8)).toEqual("backspace");
+        expect(getControlCharacterType(9)).toEqual("horizontalTab");
+        expect(getControlCharacterType(10)).toEqual("lineFeed");
+        expect(getControlCharacterType(11)).toEqual("verticalTab");
+        expect(getControlCharacterType(12)).toEqual("formFeed");
+        expect(getControlCharacterType(13)).toEqual("carriageReturn");
+        expect(getControlCharacterType(14)).toEqual("shiftOut");
+        expect(getControlCharacterType(15)).toEqual("shiftIn");
+        expect(getControlCharacterType(16)).toEqual("dataLineEscape");
+        expect(getControlCharacterType(17)).toEqual("deviceControl1");
+        expect(getControlCharacterType(18)).toEqual("deviceControl2");
+        expect(getControlCharacterType(19)).toEqual("deviceControl3");
+        expect(getControlCharacterType(20)).toEqual("deviceControl4");
+        expect(getControlCharacterType(21)).toEqual("negativeAcknowledge");
+        expect(getControlCharacterType(22)).toEqual("synchronousIdle");
+        expect(getControlCharacterType(23)).toEqual("endOfTransmitBlock");
+        expect(getControlCharacterType(24)).toEqual("cancel");
+        expect(getControlCharacterType(25)).toEqual("endOfMedium");
+        expect(getControlCharacterType(26)).toEqual("substitute");
+        expect(getControlCharacterType(27)).toEqual("escape");
+        expect(getControlCharacterType(28)).toEqual("fileSeparator");
+        expect(getControlCharacterType(29)).toEqual("groupSeparator");
+        expect(getControlCharacterType(30)).toEqual("recordSeparator");
         expect(getControlCharacterType(31)).toEqual("unitSeparator");
+        expect(() => {
+            getControlCharacterType(32);
+        }).toThrowError("Invalid control character");
     });
 });
