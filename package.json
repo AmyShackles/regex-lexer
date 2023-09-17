@@ -6,7 +6,7 @@
     "main": "src/index.js",
     "scripts": {
         "test": "jest",
-        "test:coverage": "npm test --coverage",
+        "test:coverage": "npm test -- --coverage --collectCoverageFrom='./src/**' --coverageDirectory='coverage'",
         "prepare": "husky install"
     },
     "repository": {
