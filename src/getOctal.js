@@ -1,4 +1,5 @@
-const { getCharacter, getControlCharacter } = require("./getUnicodeCharacter");
+const { getCharacter } = require("./getUnicodeCharacter");
+const { getControlCharacterType } = require("./getControlChar");
 
 const getOctal = (
     captureList,
@@ -37,7 +38,7 @@ const getOctal = (
         throw new Error("Octal escapes are not valid in unicode mode");
     }
     if (octalNumber < 32) {
-        const value = getControlCharacter(octalNumber);
+        const value = getControlCharacterType(octalNumber);
         return {
             nextIndex: index + length,
             token: {

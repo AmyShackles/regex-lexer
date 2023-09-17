@@ -1,4 +1,4 @@
-const { getControlChar } = require("../src/getControlChar.js");
+const { getControlChar, getControlCharacterType } = require("../src/getControlChar.js");
 
 describe("getControlChar", () => {
     test("should return the appropriate control character", () => {
@@ -338,5 +338,10 @@ describe("getControlChar", () => {
                 }
             ]
         );
+    });
+});
+describe("getControlCharacterType", () => {
+    test("should return the next index and token for control characters", () => {
+        expect(getControlCharacterType(31)).toEqual("unitSeparator");
     });
 });

@@ -1,5 +1,4 @@
 const { getUnicode } = require("../src/getUnicode.js");
-const { getControlCharacter } = require("../src/getUnicodeCharacter.js");
 
 const unicodeChar = "Ӹ";
 
@@ -25,10 +24,5 @@ describe("getUnicode", () => {
                 }
             });
         }); 
-    });
-});
-describe("getControlCharacter", () => {
-    test("should return the next index and token for control characters", () => {
-        expect(getControlCharacter(31)).toEqual("unitSeparator");
     });
 });

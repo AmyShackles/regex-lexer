@@ -1,242 +1,111 @@
 const getControlChar = (controlChar) => {
-    switch (controlChar) {
-        case "a":
-        case "A":
-            return {
+    const lowerCaseControlChar = controlChar.toLowerCase();
+    const controlCharNumericValue = lowerCaseControlChar.charCodeAt(0) - "a".charCodeAt(0) + 1;
+    if (controlCharNumericValue >= 1 && controlCharNumericValue <= 26) {
+        return {
+            quantifier: "exactlyOne",
+            regex: `\\c${controlChar}`,
+            type: "controlCharacter",
+            value: getControlCharacterType(controlCharNumericValue)
+        };
+    } 
+    // Control characters only include
+    // \ca - \cz (case insensitive)
+    // So if the value after c is anything else,
+    // Match a backslash and c literally
+    return (
+        [
+            {
                 quantifier: "exactlyOne",
-                regex: `\\c${controlChar}`,
-                type: "controlCharacter",
-                value: "startOfHeading",
-            };
-        case "b":
-        case "B":
-            return {
+                regex: "\\",
+                type: "literal",
+                value: "\\",
+            },
+            {
                 quantifier: "exactlyOne",
-                regex: `\\c${controlChar}`,
-                type: "controlCharacter",
-                value: "startOfText",
-            };
-        case "c":
-        case "C":
-            return {
+                regex: "\\",
+                type: "literal",
+                value: "\\",
+            },
+            {
                 quantifier: "exactlyOne",
-                regex: `\\c${controlChar}`,
-                type: "controlCharacter",
-                value: "endOfText",
-            };
-        case "d":
-        case "D":
-            return {
-                quantifier: "exactlyOne",
-                regex: `\\c${controlChar}`,
-                type: "controlCharacter",
-                value: "endOfTransmit",
-            };
-        case "e":
-        case "E":
-            return {
-                quantifier: "exactlyOne",
-                regex: `\\c${controlChar}`,
-                type: "controlCharacter",
-                value: "enquiry",
-            };
-        case "f":
-        case "F":
-            return {
-                quantifier: "exactlyOne",
-                regex: `\\c${controlChar}`,
-                type: "controlCharacter",
-                value: "acknowledge",
-            };
-        case "g":
-        case "G":
-            return {
-                quantifier: "exactlyOne",
-                regex: `\\c${controlChar}`,
-                type: "controlCharacter",
-                value: "bell",
-            };
-        case "h":
-        case "H":
-            return {
-                quantifier: "exactlyOne",
-                regex: `\\c${controlChar}`,
-                type: "controlCharacter",
-                value: "backspace",
-            };
-        case "i":
-        case "I":
-            return {
-                quantifier: "exactlyOne",
-                regex: `\\c${controlChar}`,
-                type: "controlCharacter",
-                value: "horizontalTab",
-            };
-        case "j":
-        case "J":
-            return {
-                quantifier: "exactlyOne",
-                regex: `\\c${controlChar}`,
-                type: "controlCharacter",
-                value: "lineFeed",
-            };
-        case "k":
-        case "K":
-            return {
-                quantifier: "exactlyOne",
-                regex: `\\c${controlChar}`,
-                type: "controlCharacter",
-                value: "verticalTab",
-            };
-        case "l":
-        case "L":
-            return {
-                quantifier: "exactlyOne",
-                regex: `\\c${controlChar}`,
-                type: "controlCharacter",
-                value: "formFeed",
-            };
-        case "m":
-        case "M":
-            return {
-                quantifier: "exactlyOne",
-                regex: `\\c${controlChar}`,
-                type: "controlCharacter",
-                value: "carriageReturn",
-            };
-        case "n":
-        case "N":
-            return {
-                quantifier: "exactlyOne",
-                regex: `\\c${controlChar}`,
-                type: "controlCharacter",
-                value: "shiftOut",
-            };
-        case "o":
-        case "O":
-            return {
-                quantifier: "exactlyOne",
-                regex: `\\c${controlChar}`,
-                type: "controlCharacter",
-                value: "shiftIn",
-            };
-        case "p":
-        case "P":
-            return {
-                quantifier: "exactlyOne",
-                regex: `\\c${controlChar}`,
-                type: "controlCharacter",
-                value: "dataLineEscape",
-            };
-        case "q":
-        case "Q":
-            return {
-                quantifier: "exactlyOne",
-                regex: `\\c${controlChar}`,
-                type: "controlCharacter",
-                value: "deviceControl1",
-            };
-        case "r":
-        case "R":
-            return {
-                quantifier: "exactlyOne",
-                regex: `\\c${controlChar}`,
-                type: "controlCharacter",
-                value: "deviceControl2",
-            };
-        case "s":
-        case "S":
-            return {
-                quantifier: "exactlyOne",
-                regex: `\\c${controlChar}`,
-                type: "controlCharacter",
-                value: "deviceControl3",
-            };
-        case "t":
-        case "T":
-            return {
-                quantifier: "exactlyOne",
-                regex: `\\c${controlChar}`,
-                type: "controlCharacter",
-                value: "deviceControl4",
-            };
-        case "u":
-        case "U":
-            return {
-                quantifier: "exactlyOne",
-                regex: `\\c${controlChar}`,
-                type: "controlCharacter",
-                value: "negativeAcknowledge",
-            };
-        case "v":
-        case "V":
-            return {
-                quantifier: "exactlyOne",
-                regex: `\\c${controlChar}`,
-                type: "controlCharacter",
-                value: "synchronousIdle",
-            };
-        case "w":
-        case "W":
-            return {
-                quantifier: "exactlyOne",
-                regex: `\\c${controlChar}`,
-                type: "controlCharacter",
-                value: "endOfTransmitBlock",
-            };
-        case "x":
-        case "X":
-            return {
-                quantifier: "exactlyOne",
-                regex: `\\c${controlChar}`,
-                type: "controlCharacter",
-                value: "cancel",
-            };
-        case "y":
-        case "Y":
-            return {
-                quantifier: "exactlyOne",
-                regex: `\\c${controlChar}`,
-                type: "controlCharacter",
-                value: "endOfMedium",
-            };
-        case "z":
-        case "Z":
-            return {
-                quantifier: "exactlyOne",
-                regex: `\\c${controlChar}`,
-                type: "controlCharacter",
-                value: "substitute",
-            };
-        // Control characters only include
-        // \ca - \cz (case insensitive)
-        // So if the value after c is anything else,
-        // Match a backslash and c literally
-        default: {
-            return (
-                [
-                    {
-                        quantifier: "exactlyOne",
-                        regex: "\\",
-                        type: "literal",
-                        value: "\\",
-                    },
-                    {
-                        quantifier: "exactlyOne",
-                        regex: "\\",
-                        type: "literal",
-                        value: "\\",
-                    },
-                    {
-                        quantifier: "exactlyOne",
-                        regex: "c",
-                        type: "literal",
-                        value: "c",
-                    },
-                ]
-            );
-        }
-    }
+                regex: "c",
+                type: "literal",
+                value: "c",
+            },
+        ]
+    );
 };
 
-module.exports = { getControlChar };
+function getControlCharacterType(codepoint) {
+    switch (codepoint) {
+        case 0:
+            return "NUL";
+        case 1:
+            return "startOfHeading";
+        case 2:
+            return "startOfText";
+        case 3:
+            return "endOfText";
+        case 4:
+            return "endOfTransmit";
+        case 5:
+            return "enquiry";
+        case 6:
+            return "acknowledge";
+        case 7:
+            return "bell";
+        case 8:
+            return "backspace";
+        case 9:
+            return "horizontalTab";
+        case 10:
+            return "lineFeed";
+        case 11:
+            return "verticalTab";
+        case 12:
+            return "formFeed";
+        case 13:
+            return "carriageReturn";
+        case 14:
+            return "shiftOut";
+        case 15:
+            return "shiftIn";
+        case 16:
+            return "dataLineEscape";
+        case 17:
+            return "deviceControl1";
+        case 18:
+            return "deviceControl2";
+        case 19:
+            return "deviceControl3";
+        case 20:
+            return "deviceControl4";
+        case 21:
+            return "negativeAcknowledge";
+        case 22:
+            return "synchronousIdle";
+        case 23:
+            return "endOfTransmitBlock";
+        case 24:
+            return "cancel";
+        case 25:
+            return "endOfMedium";
+        case 26:
+            return "substitute";
+        case 27:
+            return "escape";
+        case 28:
+            return "fileSeparator";
+        case 29:
+            return "groupSeparator";
+        case 30:
+            return "recordSeparator";
+        case 31:
+            return "unitSeparator";
+        default:
+            throw new Error("Invalid control character");
+    }
+}
+
+module.exports = { getControlChar, getControlCharacterType };
