@@ -6,7 +6,6 @@ describe("getOctal", () => {
     it("should handle nul characters", () => {
         const testRegex = /\0/gs;
         const { flags, pattern } = getPatternAndFlags(testRegex);
-  
         const captureRegex = /^(?<capture_group>(?:(?<named_capture>\(\?<.*?>.*?\))|(?<capture>\([^?][^:]?.*?\))))$/;
         const captureList = getParenStack(pattern).filter((group) => captureRegex.test(group));
         const numberOfBackreferences = captureList.length;
@@ -62,8 +61,26 @@ describe("getOctal", () => {
                 value: "lineFeed"
             }
         });
+        expect(getOctal([], 0, "\\7", 1, false)).toEqual({
+            nextIndex: 2,
+            token: {
+                quantifier: "exactlyOne",
+                regex: "\\7",
+                type: "controlCharacter",
+                value: "bell"
+            }
+        });
+        expect(getOctal([], 0, "\\4", 1, false)).toEqual({
+            nextIndex: 2,
+            token: {
+                quantifier: "exactlyOne",
+                regex: "\\4",
+                type: "controlCharacter",
+                value: "endOfTransmit"
+            }
+        });
     });
-    it("should handle non-control character octals", () => {
+    it("should handle two-digit octals", () => {
         const testRegex = /\77/;
         const { flags, pattern } = getPatternAndFlags(testRegex);
         const captureRegex = /^(?<capture_group>(?:(?<named_capture>\(\?<.*?>.*?\))|(?<capture>\([^?][^:]?.*?\))))$/;
@@ -76,6 +93,40 @@ describe("getOctal", () => {
                 regex: "\\77",
                 type: "octal",
                 value: "?"
+            }
+        });
+        expect(getOctal([], 0, "\\27", 1, flags.includes("u"))).toEqual({
+            nextIndex: 3,
+            token: {
+                quantifier: "exactlyOne",
+                regex: "\\27",
+                type: "controlCharacter",
+                value: "endOfTransmitBlock"
+            }
+        });
+    });
+    it("should handle three-digit octals", () => {
+        const testRegex = /\377/;
+        const { flags, pattern } = getPatternAndFlags(testRegex);
+        const captureRegex = /^(?<capture_group>(?:(?<named_capture>\(\?<.*?>.*?\))|(?<capture>\([^?][^:]?.*?\))))$/;
+        const captureList = getParenStack(pattern).filter((group) => captureRegex.test(group));
+        const numberOfBackreferences = captureList.length;
+        expect(getOctal(captureList, numberOfBackreferences, pattern, 1, flags.includes("u"))).toEqual({
+            nextIndex: 4,
+            token: {
+                quantifier: "exactlyOne",
+                regex: "\\377",
+                type: "octal",
+                value: "ÿ"
+            }
+        });
+        expect(getOctal([], 0, "\\376", 1, false)).toEqual({
+            nextIndex: 4,
+            token: {
+                quantifier: "exactlyOne",
+                regex: "\\376",
+                type: "octal",
+                value: "þ"
             }
         });
     });

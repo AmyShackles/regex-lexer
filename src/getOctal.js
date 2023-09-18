@@ -7,7 +7,7 @@ const getOctal = (
     regex,
     index,
     unicodeMode,
-    inCharacterSet
+    inCharacterSet,
 ) => {
     const regexString = regex.slice(index);
     const number = getNumber(regexString);
@@ -50,17 +50,15 @@ const getOctal = (
         };
     }
     const unicode = getCharacter(octalNumber);
-    if (unicode)
-        return {
-            nextIndex: index + length,
-            token: {
-                quantifier: "exactlyOne",
-                regex: `\\${number}`,
-                type: "octal",
-                value: unicode,
-            },
-        };
-    throw new Error("Invalid octal");
+    return {
+        nextIndex: index + length,
+        token: {
+            quantifier: "exactlyOne",
+            regex: `\\${number}`,
+            type: "octal",
+            value: unicode,
+        },
+    };
 };
 
 const getNumber = (regexString) => {
@@ -71,10 +69,12 @@ const getNumber = (regexString) => {
             }
             return regexString.slice(0, 2);
         }
+        return regexString.slice(0, 1);
     } else if (/[4-7]/.test(regexString[0])) {
         if (/[1-7]/.test(regexString[1])) {
             return regexString.slice(0, 2);
         }
+        return regexString.slice(0, 1);
     }
     return regexString.slice(0, 1);
 };
