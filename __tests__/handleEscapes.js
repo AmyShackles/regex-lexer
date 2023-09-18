@@ -80,6 +80,32 @@ describe("handleEscapes", () => {
             },
         });
     });
+    it("should handle \\B in a character set", () => {
+        const testRegex = /[\B]/gs;
+        const { flags, pattern } = getPatternAndFlags(testRegex);
+        const currentChar = pattern[2];
+        const nextChar = pattern[3];
+        const index = 1;
+        const unicodeMode = flags.includes("u");
+        expect(
+            handleEscapes({
+                currentChar,
+                inCharacterSet: true,
+                index,
+                nextChar,
+                pattern,
+                unicodeMode,
+            })
+        ).toEqual({
+            index: index + 1,
+            token: {
+                quantifier: "exactlyOne",
+                regex: "\\B",
+                type: "literal",
+                value: "B",
+            },
+        });
+    });
     it("should handle digit", () => {
         const testRegex = /\d/gs;
         const { flags, pattern } = getPatternAndFlags(testRegex);
@@ -470,5 +496,30 @@ describe("handleEscapes", () => {
                 value: pattern[index],
             },
         });
+    });
+    it("should handle a hexadecimal value", () => {
+        const testRegex = /\x4a/gs;
+        const { pattern } = getPatternAndFlags(testRegex);
+        const currentChar = pattern[1];
+        const nextChar = pattern[2];
+        const index = 1;
+        expect(
+            handleEscapes({
+                currentChar,
+                inCharacterSet: false,
+                index,
+                nextChar,
+                pattern,
+                unicodeMode: false
+            })).toEqual({
+                index: index + 3,
+                token: {
+                    quantifier: "exactlyOne",
+                    regex: "\\x4a",
+                    type: "hexadecimal",
+                    value: "J"
+                }
+            });
+    
     });
 });
