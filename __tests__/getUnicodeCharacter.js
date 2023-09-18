@@ -8,6 +8,9 @@ describe("getCharacter", () => {
     test("should return the right character given a codepoint", () => {
         expect(getCharacter(unicodeCodepoint)).toEqual(unicodeChar);
     });
+    test("should return an empty string if an invalid codepoint is given", () => {
+        expect(getCharacter("aaa")).toEqual("")
+    })
 });
 describe("getUnicodeCharacter", () => {
     test("should return the appropriate response for hexadecimal", () => {
@@ -43,6 +46,9 @@ describe("getUnicodeCharacter", () => {
             }
         })
     });
+    test("should return null if given a non-hex value", () => {
+        expect(getUnicodeCharacter("ggah", 7, "unicode")).toEqual(null)
+    })
 });
 describe("getRegexForUnicode", () => {
     test("should return the appropriate response for hexadecimal", () => {
@@ -54,4 +60,9 @@ describe("getRegexForUnicode", () => {
     test("should return the appropriate response for unicodeExtended", () => {
         expect(getRegexForUnicode("unicodeExtended", "0012")).toEqual("\\u{0012}")
     });
+    test("should throw if used for an invalid type", () => {
+        expect(() => {
+            getRegexForUnicode("decimal", "0012");
+        }).toThrowError("This function is only configured to work with unicode and hex");  
+    })
 });
