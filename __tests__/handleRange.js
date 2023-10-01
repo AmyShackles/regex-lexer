@@ -22,7 +22,7 @@ describe("handleRange", () => {
         const betweenBraces = ",5";
         const index = 2;
         const result = handleRange(lastElement, betweenBraces, index);
-        expect(result).toEqual({index: index + 1, token: { quantifier: "exactlyOne", regex: "{", type: "literal", value: "{"}});
+        expect(result).toEqual({index: index, token: { quantifier: "exactlyOne", regex: "{", type: "literal", value: "{"}});
         expect(lastElement.quantifier).toEqual("exactlyOne");
     });
     test("should handle if minimum quantifier is not numeric", () => {
@@ -30,7 +30,7 @@ describe("handleRange", () => {
         const betweenBraces = "a,5";
         const index = 2;
         const result = handleRange(lastElement, betweenBraces, index);
-        expect(result).toEqual({index: index + 1, token: { quantifier: "exactlyOne", regex: "{", type: "literal", value: "{"}});
+        expect(result).toEqual({index: index, token: { quantifier: "exactlyOne", regex: "{", type: "literal", value: "{"}});
         expect(lastElement.quantifier).toEqual("exactlyOne");
     });
     test("should handle minimum and maximum quantifiers", () => {
@@ -68,7 +68,7 @@ describe("handleRange", () => {
         const betweenBraces = "3,a";
         const index = 2;
         const result = handleRange(lastElement, betweenBraces, index);
-        expect(result).toEqual({index: index + 1, token: { quantifier: "exactlyOne", regex: "{", type: "literal", value: "{"}});
+        expect(result).toEqual({index: index, token: { quantifier: "exactlyOne", regex: "{", type: "literal", value: "{"}});
         expect(lastElement.quantifier).toEqual("exactlyOne");
     });
     test("should throw if previous element is quantified", () => {

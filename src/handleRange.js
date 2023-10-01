@@ -13,7 +13,7 @@ const handleRange = (lastElement, betweenBraces, index) => {
     const { min, max } = getMinMax(betweenBraces);
     if (!isNumeric(min)) {
         return {
-            index: index + 1,
+            index,
             token: {
                 quantifier: "exactlyOne",
                 regex: "{",
@@ -51,7 +51,7 @@ const handleRange = (lastElement, betweenBraces, index) => {
         return { index: index + betweenBraces.length + 1 };
     }
     return {
-        index: index + 1,
+        index,
         token: {
             quantifier: "exactlyOne",
             regex: "{",
