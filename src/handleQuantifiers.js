@@ -4,15 +4,24 @@ const handleQuantifiers = (quantifier, lastElement, nextChar, index) => {
             `Quantifier must follow an unquantified element, but last element was ${JSON.stringify(lastElement, null, 2)} at index ${index}\n`
         );
     }
-    if (quantifier === "*") {
-        lastElement.quantifier = "zeroOrMore";
-        lastElement.regex += "*";
-    } else if (quantifier === "+") {
-        lastElement.quantifier = "oneOrMore";
-        lastElement.regex += "+";
-    } else if (quantifier === "?") {
-        lastElement.quantifier = "zeroOrOne";
-        lastElement.regex += "?";
+    switch (quantifier) {
+        case "*": {
+            lastElement.quantifier = "zeroOrMore";
+            lastElement.regex += "*";
+            break;
+        };
+        case "+": {
+            lastElement.quantifier = "oneOrMore";
+            lastElement.regex += "+";
+            break;
+        }
+        case "?": {
+            lastElement.quantifier = "zeroOrOne";
+            lastElement.regex += "?";
+            break;
+        }
+        default:
+            throw new Error(`Unknown quantifier "${quantifier}"`);
     }
     index++;
     if (nextChar === "?") {

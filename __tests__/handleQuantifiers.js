@@ -11,7 +11,7 @@ describe("handleQuantifiers", () => {
             };
             const nextChar = ".";
             function testError() {
-                handleQuantifiers("*", lastElement, nextChar, 0);
+                handleQuantifiers("*", lastElement, nextChar, 2);
             }
             expect(testError).toThrowError(
                 new Error(
@@ -19,7 +19,7 @@ describe("handleQuantifiers", () => {
                         lastElement,
                         null,
                         2
-                    )} at index 0\n`
+                    )} at index 2\n`
                 )
             );
             expect(lastElement.quantifier).toEqual("oneOrMore");
@@ -33,7 +33,7 @@ describe("handleQuantifiers", () => {
                 value: "i",
             };
             const nextChar = ".";
-            expect(handleQuantifiers("*", lastElement, nextChar, 0)).toEqual(1);
+            expect(handleQuantifiers("*", lastElement, nextChar, 1)).toEqual(2);
             expect(lastElement.quantifier).toEqual("zeroOrMore");
             expect(lastElement.regex).toEqual("i*");
         });
@@ -45,7 +45,7 @@ describe("handleQuantifiers", () => {
                 value: "i",
             };
             const nextChar = "?";
-            expect(handleQuantifiers("*", lastElement, nextChar, 0)).toEqual(2);
+            expect(handleQuantifiers("*", lastElement, nextChar, 1)).toEqual(3);
             expect(lastElement.quantifier).toEqual("zeroOrMore-lazy");
             expect(lastElement.regex).toEqual("i*?");
         });
@@ -60,7 +60,7 @@ describe("handleQuantifiers", () => {
             };
             const nextChar = ".";
             function testError() {
-                handleQuantifiers("+", lastElement, nextChar, 0);
+                handleQuantifiers("+", lastElement, nextChar, 2);
             }
             expect(testError).toThrowError(
                 new Error(
@@ -68,7 +68,7 @@ describe("handleQuantifiers", () => {
                         lastElement,
                         null,
                         2
-                    )} at index 0\n`
+                    )} at index 2\n`
                 )
             );
             expect(lastElement.quantifier).toEqual("zeroOrMore");
@@ -82,7 +82,7 @@ describe("handleQuantifiers", () => {
                 value: "i",
             };
             const nextChar = ".";
-            expect(handleQuantifiers("+", lastElement, nextChar, 0)).toEqual(1);
+            expect(handleQuantifiers("+", lastElement, nextChar, 1)).toEqual(2);
             expect(lastElement.quantifier).toEqual("oneOrMore");
             expect(lastElement.regex).toEqual("i+");
         });
@@ -94,7 +94,7 @@ describe("handleQuantifiers", () => {
                 value: "i",
             };
             const nextChar = "?";
-            expect(handleQuantifiers("+", lastElement, nextChar, 0)).toEqual(2);
+            expect(handleQuantifiers("+", lastElement, nextChar, 1)).toEqual(3);
             expect(lastElement.quantifier).toEqual("oneOrMore-lazy");
             expect(lastElement.regex).toEqual("i+?");
         });
@@ -109,7 +109,7 @@ describe("handleQuantifiers", () => {
             };
             const nextChar = ".";
             function testError() {
-                handleQuantifiers("?", lastElement, nextChar, 0);
+                handleQuantifiers("?", lastElement, nextChar, 2);
             }
             expect(testError).toThrowError(
                 new Error(
@@ -117,7 +117,7 @@ describe("handleQuantifiers", () => {
                         lastElement,
                         null,
                         2
-                    )} at index 0\n`
+                    )} at index 2\n`
                 )
             );
             expect(lastElement.quantifier).toEqual("oneOrMore");
@@ -131,7 +131,7 @@ describe("handleQuantifiers", () => {
                 value: "i",
             };
             const nextChar = ".";
-            expect(handleQuantifiers("?", lastElement, nextChar, 0)).toEqual(1);
+            expect(handleQuantifiers("?", lastElement, nextChar, 1)).toEqual(2);
             expect(lastElement.quantifier).toEqual("zeroOrOne");
             expect(lastElement.regex).toEqual("i?");
         });
@@ -143,9 +143,23 @@ describe("handleQuantifiers", () => {
                 value: "i",
             };
             const nextChar = "?";
-            expect(handleQuantifiers("?", lastElement, nextChar, 0)).toEqual(2);
+            expect(handleQuantifiers("?", lastElement, nextChar, 1)).toEqual(3);
             expect(lastElement.quantifier).toEqual("zeroOrOne-lazy");
             expect(lastElement.regex).toEqual("i??");
         });
+    });
+    test("quantifier unknown", () => {
+        const lastElement = {
+            quantifier: "exactlyOne",
+            regex: "i",
+            type: "literal",
+            value: "i",
+        };
+        expect(() => {
+
+            handleQuantifiers("!", lastElement, ".", 1);
+        }).toThrowError("Unknown quantifier \"!\"");
+        expect(lastElement.quantifier).toEqual("exactlyOne");
+        expect(lastElement.regex).toEqual("i");
     });
 });
