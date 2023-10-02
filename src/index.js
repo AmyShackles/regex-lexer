@@ -436,6 +436,29 @@ function tokenize(regex) {
                 }
                 break;
             }
+            case "$": {
+                if (inCharacterSet) {
+                    last(stack).push({
+                        quantifier: "exactlyOne",
+                        regex: "$",
+                        type: "literal",
+                        value: "$",
+                    });
+                    i++;
+                    break;
+                }
+                if (i === pattern.length - 1) {
+                    last(stack).push({
+                        quantifier: "",
+                        regex: "$",
+                        type: "anchor",
+                        value: multiline ? "Match end of line" : "Match end of text"
+                    });
+                    i++;
+                    break;
+                }
+                throw new Error("The '$' symbol means something special in regular expressions and so needs to be escaped outside of a character class if not used as an anchor");
+            }
             default: {
                 last(stack).push({
                     quantifier: "exactlyOne",

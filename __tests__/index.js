@@ -95,10 +95,10 @@ describe("tokenize", () => {
                             quantifier: "exactlyOne",
                             regex: "a",
                             type: "literal",
-                            value: "a"
-                        }
-                    ]
-                }
+                            value: "a",
+                        },
+                    ],
+                },
             ]);
         });
         test("should interpret certain characters as literal in a character set", () => {
@@ -258,37 +258,78 @@ describe("tokenize", () => {
         });
     });
     describe("should handle anchors", () => {
-        test("without multiline flag set", () => {
-            expect(tokenize(/^a/)).toEqual([
-                {
-                    quantifier: "",
-                    regex: "^",
-                    type: "anchor",
-                    value: "Match start of text",
-                },
-                {
-                    quantifier: "exactlyOne",
-                    regex: "a",
-                    type: "literal",
-                    value: "a",
-                },
-            ]);
+        describe("without multiline flag set", () => {
+            test("starting anchor", () => {
+                expect(tokenize(/^a/)).toEqual([
+                    {
+                        quantifier: "",
+                        regex: "^",
+                        type: "anchor",
+                        value: "Match start of text",
+                    },
+                    {
+                        quantifier: "exactlyOne",
+                        regex: "a",
+                        type: "literal",
+                        value: "a",
+                    },
+                ]);
+            });
+            test("ending anchor", () => {
+                expect(tokenize(/a$/)).toEqual([
+                    {
+                        quantifier: "exactlyOne",
+                        regex: "a",
+                        type: "literal",
+                        value: "a"
+                    },
+                    {
+                        quantifier: "",
+                        regex: "$",
+                        type: "anchor",
+                        value: "Match end of text"
+                    }
+                ]);
+            });
         });
-        test("with multiline flag set", () => {
-            expect(tokenize(/^a/m)).toEqual([
-                {
-                    quantifier: "",
-                    regex: "^",
-                    type: "anchor",
-                    value: "Match start of line",
-                },
-                {
-                    quantifier: "exactlyOne",
-                    regex: "a",
-                    type: "literal",
-                    value: "a",
-                },
-            ]);
+        describe("with multiline flag set", () => {
+            test("starting anchor", () => {
+                expect(tokenize(/^a/m)).toEqual([
+                    {
+                        quantifier: "",
+                        regex: "^",
+                        type: "anchor",
+                        value: "Match start of line",
+                    },
+                    {
+                        quantifier: "exactlyOne",
+                        regex: "a",
+                        type: "literal",
+                        value: "a",
+                    },
+                ]);
+            });
+            test("ending anchor", () => {
+                expect(tokenize(/a$/m)).toEqual([
+                    {
+                        quantifier: "exactlyOne",
+                        regex: "a",
+                        type: "literal",
+                        value: "a"
+                    },
+                    {
+                        quantifier: "",
+                        regex: "$",
+                        type: "anchor",
+                        value: "Match end of line"
+                    }
+                ]);
+            });
+        });
+        test("should throw a warning if $ not escaped outside character set if not the last character", () => {
+            expect(() => {
+                tokenize(/$a/);
+            }).toThrowError("The '$' symbol means something special in regular expressions and so needs to be escaped outside of a character class if not used as an anchor");
         });
     });
     describe("should handle (", () => {
@@ -522,8 +563,8 @@ describe("tokenize", () => {
                     quantifier: "atLeast2",
                     regex: "a{2,}",
                     type: "literal",
-                    value: "\"a\" repeated at least 2 times"
-                }
+                    value: "\"a\" repeated at least 2 times",
+                },
             ]);
         });
         test("should handle minimum and maximum given", () => {
@@ -532,8 +573,8 @@ describe("tokenize", () => {
                     quantifier: "2to5",
                     regex: "a{2,5}",
                     type: "literal",
-                    value: "\"a\" repeated at least 2 times and no more than 5 times"
-                }
+                    value: "\"a\" repeated at least 2 times and no more than 5 times",
+                },
             ]);
         });
     });
@@ -544,8 +585,8 @@ describe("tokenize", () => {
                     quantifier: "zeroOrOne",
                     regex: "a?",
                     type: "literal",
-                    value: "a"
-                }
+                    value: "a",
+                },
             ]);
         });
         test("optional lazy", () => {
@@ -554,8 +595,8 @@ describe("tokenize", () => {
                     quantifier: "zeroOrOne-lazy",
                     regex: "a??",
                     type: "literal",
-                    value: "a"
-                }
+                    value: "a",
+                },
             ]);
         });
         test("kleene star greedy", () => {
@@ -564,8 +605,8 @@ describe("tokenize", () => {
                     quantifier: "zeroOrMore",
                     regex: "a*",
                     type: "literal",
-                    value: "a"
-                }
+                    value: "a",
+                },
             ]);
         });
         test("kleene star lazy", () => {
@@ -574,8 +615,8 @@ describe("tokenize", () => {
                     quantifier: "zeroOrMore-lazy",
                     regex: "a*?",
                     type: "literal",
-                    value: "a"
-                }
+                    value: "a",
+                },
             ]);
         });
         test("kleene plus greedy", () => {
@@ -584,8 +625,8 @@ describe("tokenize", () => {
                     quantifier: "oneOrMore",
                     regex: "a+",
                     type: "literal",
-                    value: "a"
-                }
+                    value: "a",
+                },
             ]);
         });
         test("kleene plus lazy", () => {
@@ -594,8 +635,8 @@ describe("tokenize", () => {
                     quantifier: "oneOrMore-lazy",
                     regex: "a+?",
                     type: "literal",
-                    value: "a"
-                }
+                    value: "a",
+                },
             ]);
         });
     });
