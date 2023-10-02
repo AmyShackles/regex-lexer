@@ -6,7 +6,7 @@
     "main": "src/index.js",
     "scripts": {
         "test": "jest",
-        "test:coverage": "npm test -- --coverage --collectCoverageFrom='./src/**' --coverageDirectory='coverage'",
+        "test:coverage": "npm test -- --coverage",
         "prepare": "husky install"
     },
     "repository": {
@@ -30,6 +30,18 @@
         "jest": "^29.7.0",
         "lint-staged": "^14.0.1",
         "prettier": "^3.0.3"
+    },
+    "jest": {
+        "collectCoverage": true,
+        "collectCoverageFrom": ["./src/**"],
+        "coverageDirectory": "coverage",
+        "coverageThreshold": {
+            "./src/**": {
+                "branches": 90,
+                "functions": 90,
+                "lines": 90
+            }
+        }
     },
     "husky": {
         "hooks": {

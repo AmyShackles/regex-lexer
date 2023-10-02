@@ -5,10 +5,36 @@ const { handleQuantifiers } = require("./handleQuantifiers");
 
 const last = (stack) => stack[stack.length - 1];
 
+const getPatternAndFlagsFromString = (regex) => {
+    if (regex[0] === "/") {
+        const lastIndexOfForwardSlash = regex.lastIndexOf("/");
+        const pattern = regex.slice(1, lastIndexOfForwardSlash);
+        if (pattern.match(/.*[^\\]/)) {
+            if (lastIndexOfForwardSlash !== regex.length - 1) {
+                const possibleFlags = [...regex.slice(lastIndexOfForwardSlash + 1).toLowerCase(),]
+                    .sort()
+                    .join("");
+                if (possibleFlags.match(/^d?g?i?m?s?u?v?y?$/)) {
+                    return { flags: possibleFlags, pattern };
+                }
+                return { flags: "", pattern: regex };
+            }
+            return { flags: "", pattern };
+        }
+        return { flags: "", pattern: regex };
+    }
+    return { flags: "", pattern: regex };
+};
+
 const getPatternAndFlags = (regex) => {
     if (typeof regex === "string") {
-        const { flags, source } = new RegExp(regex);
-        return { flags, pattern: source };
+        const { flags, pattern } = getPatternAndFlagsFromString(regex);
+        try {
+            new RegExp(pattern);
+        } catch (e) {
+            throw new Error(e.message);
+        }
+        return { flags, pattern };
     }
     const { flags, source } = regex;
     return { flags, pattern: source };
@@ -20,8 +46,16 @@ const findInstancesInCharacterArray = (regex, string) => {
 const dotRegex = /(?<=[^\\]\[[^\]]*)\.(?=.*\])|(?:\\)\./g;
 
 function tokenize(regex) {
-    const { pattern, flags } = getPatternAndFlags(regex);
-    const stack = [];
+    let pattern, flags;
+    try {
+        const patternAndFlags = getPatternAndFlags(regex);
+        pattern = patternAndFlags.pattern;
+        flags = patternAndFlags.flags;
+    } catch (e) {
+        throw new Error(e.message);
+    }
+
+    const stack = [[]];
     /* 
         Searches the entire string for instances of a period in a character
         set because a period in a character set does not need to be escaped
@@ -32,14 +66,12 @@ function tokenize(regex) {
     const multiline = flags.includes("m");
     let i = 0;
     if (pattern[0] === "^") {
-        stack.push([
-            {
-                quantifier: "",
-                regex: "^",
-                type: "anchor",
-                value: multiline ? "Match start of line" : "Match start of text",
-            }
-        ]);
+        stack[0].push({
+            quantifier: "",
+            regex: "^",
+            type: "anchor",
+            value: multiline ? "Match start of line" : "Match start of text",
+        });
         i++;
     }
     while (i < pattern.length) {
@@ -47,9 +79,6 @@ function tokenize(regex) {
         const next = pattern[i];
         switch (next) {
             case "\\": {
-                if (i + 1 >= pattern.length) {
-                    throw new Error(`Bad escape character at index ${i}`);
-                }
                 i++;
                 const currentChar = pattern[i];
                 const nextChar = pattern[i + 1];
@@ -162,7 +191,7 @@ function tokenize(regex) {
                                 {
                                     quantifier: "exactlyOne",
                                     regex: "(?!",
-                                    type: "negativeLookeahead",
+                                    type: "negativeLookahead",
                                 },
                             ]);
                             i += 3;
@@ -202,6 +231,25 @@ function tokenize(regex) {
                                 i += 4;
                                 break;
                             }
+                            const closingBracketIndex = pattern.indexOf(
+                                ">",
+                                i + 4,
+                            );
+                            // We *should* have thrown before now if we get to here and it isn't a named capture
+                            /* istanbul ignore else */
+                            const captureName = pattern.slice(
+                                i + 3,
+                                closingBracketIndex,
+                            );
+                            stack.push([
+                                {
+                                    quantifier: "exactlyOne",
+                                    regex: `(?<${captureName}>`,
+                                    type: "namedCapturingGroup",
+                                },
+                            ]);
+                            i = closingBracketIndex + 1;
+                            break;
                         }
                     }
                     break;
@@ -227,32 +275,16 @@ function tokenize(regex) {
                     i++;
                     break;
                 }
-                if (stack.length < 1) {
-                    throw new Error(`No group to close at index ${i}`);
-                }
                 const states = stack.pop();
                 const label = states.shift();
-                if (stack.length === 0) {
-                    stack.push([
-                        {
-                            quantifier: label.quantifier,
-                            regex: `${label.regex}${states
-                                .map((s) => s.regex)
-                                .join("")})`,
-                            type: label.type,
-                            value: states,
-                        },
-                    ]);
-                } else {
-                    last(stack).push({
-                        quantifier: label.quantifier,
-                        regex: `${label.regex}${states
-                            .map((s) => s.regex)
-                            .join("")})`,
-                        type: label.type,
-                        value: states,
-                    });
-                }
+                last(stack).push({
+                    quantifier: label.quantifier,
+                    regex: `${label.regex}${states
+                        .map((s) => s.regex)
+                        .join("")})`,
+                    type: label.type,
+                    value: states,
+                });
                 i++;
                 break;
             }
@@ -313,24 +345,10 @@ function tokenize(regex) {
                 break;
             }
             case "]": {
-                characterSetStack.pop();
-                if (stack.length < 1) {
-                    throw new Error(`No set to close at index ${i}`);
-                }
-                const states = stack.pop();
-                const label = states.shift();
-                if (stack.length === 0) {
-                    stack.push([
-                        {
-                            quantifier: label.quantifier,
-                            regex: `${label.regex}${states
-                                .map((s) => s.regex)
-                                .join("")}]`,
-                            type: label.type,
-                            value: states,
-                        },
-                    ]);
-                } else {
+                if (inCharacterSet) {
+                    characterSetStack.pop();
+                    const states = stack.pop();
+                    const label = states.shift();
                     last(stack).push({
                         quantifier: label.quantifier,
                         regex: `${label.regex}${states
@@ -339,7 +357,15 @@ function tokenize(regex) {
                         type: label.type,
                         value: states,
                     });
+                    i++;
+                    break;
                 }
+                last(stack).push({
+                    quantifier: "exactlyOne",
+                    regex: next,
+                    type: "literal",
+                    value: next,
+                });
                 i++;
                 break;
             }
@@ -360,7 +386,7 @@ function tokenize(regex) {
                 break;
             }
             case "/": {
-                if (characterSetStack.length > 0) {
+                if (inCharacterSet) {
                     last(stack).push({
                         quantifier: "exactlyOne",
                         regex: "/",
@@ -421,9 +447,6 @@ function tokenize(regex) {
                 break;
             }
         }
-    }
-    if (stack.length !== 1) {
-        throw new Error("Unmatched groups in regular expression");
     }
     return stack[0];
 }
