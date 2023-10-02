@@ -393,16 +393,10 @@ function tokenize(regex) {
                         type: "literal",
                         value: "/",
                     });
-                } else {
-                    last(stack).push({
-                        quantifier: "exactlyOne",
-                        regex: next,
-                        type: "literal",
-                        value: next,
-                    });
-                }
                 i++;
                 break;
+                }
+                throw new Error("Unescaped forward slash");
             }
             case "?": {
                 if (characterSetStack.length > 0) {

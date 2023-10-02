@@ -281,14 +281,14 @@ describe("tokenize", () => {
                         quantifier: "exactlyOne",
                         regex: "a",
                         type: "literal",
-                        value: "a"
+                        value: "a",
                     },
                     {
                         quantifier: "",
                         regex: "$",
                         type: "anchor",
-                        value: "Match end of text"
-                    }
+                        value: "Match end of text",
+                    },
                 ]);
             });
         });
@@ -315,21 +315,23 @@ describe("tokenize", () => {
                         quantifier: "exactlyOne",
                         regex: "a",
                         type: "literal",
-                        value: "a"
+                        value: "a",
                     },
                     {
                         quantifier: "",
                         regex: "$",
                         type: "anchor",
-                        value: "Match end of line"
-                    }
+                        value: "Match end of line",
+                    },
                 ]);
             });
         });
         test("should throw a warning if $ not escaped outside character set if not the last character", () => {
             expect(() => {
                 tokenize(/$a/);
-            }).toThrowError("The '$' symbol means something special in regular expressions and so needs to be escaped outside of a character class if not used as an anchor");
+            }).toThrowError(
+                "The '$' symbol means something special in regular expressions and so needs to be escaped outside of a character class if not used as an anchor",
+            );
         });
     });
     describe("should handle (", () => {
@@ -506,15 +508,39 @@ describe("tokenize", () => {
             ]);
         });
     });
-    test("should handle /", () => {
-        expect(tokenize("/")).toEqual([
-            {
-                quantifier: "exactlyOne",
-                regex: "/",
-                type: "literal",
-                value: "/",
-            },
-        ]);
+    describe("should handle /", () => {
+        test("should throw if outside a character set and not escaped", () => {
+            expect(() => {
+                tokenize("/");
+            }).toThrowError("Unescaped forward slash");
+        });
+        test("should return a literal in a character set", () => {
+            expect(tokenize("[/]")).toEqual([
+                {
+                    quantifier: "exactlyOne",
+                    regex: "[/]",
+                    type: "characterSet",
+                    value: [
+                        {
+                            quantifier: "exactlyOne",
+                            regex: "/",
+                            type: "literal",
+                            value: "/"
+                        }
+                    ]
+                }
+            ]);
+        });
+        test("should handle an escaped forward slash and treat it as a literal", () => {
+            expect(tokenize("\\/")).toEqual([
+                {
+                    quantifier: "exactlyOne",
+                    regex: "\\/",
+                    type: "element",
+                    value: "/"
+                }
+            ]);
+        });
     });
     describe("should handle when { } are used with non-numeric values", () => {
         expect(tokenize("1{3,a}")).toEqual([
