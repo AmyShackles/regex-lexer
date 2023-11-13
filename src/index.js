@@ -370,7 +370,7 @@ function tokenize(regex) {
                 break;
             }
             case "*": {
-                if (characterSetStack.length > 0) {
+                if (inCharacterSet) {
                     last(stack).push({
                         quantifier: "exactlyOne",
                         regex: "*",
@@ -399,7 +399,7 @@ function tokenize(regex) {
                 throw new Error("Unescaped forward slash");
             }
             case "?": {
-                if (characterSetStack.length > 0) {
+                if (inCharacterSet) {
                     last(stack).push({
                         quantifier: "exactlyOne",
                         regex: "?",
@@ -415,7 +415,7 @@ function tokenize(regex) {
                 break;
             }
             case "+": {
-                if (characterSetStack.length > 0) {
+                if (inCharacterSet) {
                     last(stack).push({
                         quantifier: "exactlyOne",
                         regex: "+",
