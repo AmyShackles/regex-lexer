@@ -219,7 +219,7 @@ describe("tokenize", () => {
                             {
                                 quantifier: "exactlyOne",
                                 regex: "a-z",
-                                type: "literal",
+                                type: "range",
                                 value: "character between a and z",
                             },
                         ],

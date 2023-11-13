@@ -128,6 +128,7 @@ function tokenize(regex) {
                 ) {
                     lastElement.regex += `-${nextElement}`;
                     lastElement.value = `character between ${lastElement.value} and ${nextElement}`;
+                    lastElement.type = "range";
                     i += 2;
                     break;
                 }
