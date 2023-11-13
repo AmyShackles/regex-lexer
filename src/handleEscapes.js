@@ -13,7 +13,7 @@ const handleEscapes = ({
     unicodeMode,
     inCharacterSet,
 }) => {
-    const numberOfBackreferences = captureList?.length;
+    const numberOfBackreferences = captureList.length;
 
     switch (currentChar) {
         case "0":

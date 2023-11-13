@@ -2,6 +2,7 @@ const { getPatternAndFlags } = require("../src/index");
 const { handleEscapes } = require("../src/handleEscapes.js");
 
 describe("handleEscapes", () => {
+    const captureList = [];
     it("should handle backspace", () => {
         const testRegex = /[\b]/gs;
         const { flags, pattern } = getPatternAndFlags(testRegex);
@@ -11,6 +12,7 @@ describe("handleEscapes", () => {
         const unicodeMode = flags.includes("u");
         expect(
             handleEscapes({
+                captureList,
                 currentChar,
                 inCharacterSet: true,
                 index,
@@ -37,6 +39,7 @@ describe("handleEscapes", () => {
         const unicodeMode = flags.includes("u");
         expect(
             handleEscapes({
+                captureList,
                 currentChar,
                 inCharacterSet: false,
                 index,
@@ -63,6 +66,7 @@ describe("handleEscapes", () => {
         const unicodeMode = flags.includes("u");
         expect(
             handleEscapes({
+                captureList,
                 currentChar,
                 inCharacterSet: false,
                 index,
@@ -90,6 +94,7 @@ describe("handleEscapes", () => {
         const unicodeMode = flags.includes("u");
         expect(
             handleEscapes({
+                captureList,
                 currentChar,
                 inCharacterSet: true,
                 index,
@@ -116,6 +121,7 @@ describe("handleEscapes", () => {
         const unicodeMode = flags.includes("u");
         expect(
             handleEscapes({
+                captureList,
                 currentChar,
                 inCharacterSet: false,
                 index,
@@ -142,6 +148,7 @@ describe("handleEscapes", () => {
         const unicodeMode = flags.includes("u");
         expect(
             handleEscapes({
+                captureList,
                 currentChar,
                 inCharacterSet: false,
                 index,
@@ -168,6 +175,7 @@ describe("handleEscapes", () => {
         const unicodeMode = flags.includes("u");
         expect(
             handleEscapes({
+                captureList,
                 currentChar,
                 inCharacterSet: false,
                 index,
@@ -194,6 +202,7 @@ describe("handleEscapes", () => {
         const unicodeMode = flags.includes("u");
         expect(
             handleEscapes({
+                captureList,
                 currentChar,
                 inCharacterSet: false,
                 index,
@@ -220,6 +229,7 @@ describe("handleEscapes", () => {
         const unicodeMode = flags.includes("u");
         expect(
             handleEscapes({
+                captureList,
                 currentChar,
                 inCharacterSet: false,
                 index,
@@ -246,6 +256,7 @@ describe("handleEscapes", () => {
         const unicodeMode = flags.includes("u");
         expect(
             handleEscapes({
+                captureList,
                 currentChar,
                 inCharacterSet: false,
                 index,
@@ -272,6 +283,7 @@ describe("handleEscapes", () => {
         const unicodeMode = flags.includes("u");
         expect(
             handleEscapes({
+                captureList,
                 currentChar,
                 inCharacterSet: false,
                 index,
@@ -298,6 +310,7 @@ describe("handleEscapes", () => {
         const unicodeMode = flags.includes("u");
         expect(
             handleEscapes({
+                captureList,
                 currentChar,
                 inCharacterSet: false,
                 index,
@@ -324,6 +337,7 @@ describe("handleEscapes", () => {
         const unicodeMode = flags.includes("u");
         expect(
             handleEscapes({
+                captureList,
                 currentChar,
                 inCharacterSet: true,
                 index,
@@ -350,6 +364,7 @@ describe("handleEscapes", () => {
         const unicodeMode = flags.includes("u");
         expect(
             handleEscapes({
+                captureList,
                 currentChar,
                 inCharacterSet: true,
                 index,
@@ -376,6 +391,7 @@ describe("handleEscapes", () => {
         const unicodeMode = flags.includes("u");
         expect(
             handleEscapes({
+                captureList,
                 currentChar,
                 inCharacterSet: true,
                 index,
@@ -402,6 +418,7 @@ describe("handleEscapes", () => {
         const unicodeMode = flags.includes("u");
         expect(
             handleEscapes({
+                captureList,
                 currentChar,
                 inCharacterSet: true,
                 index,
@@ -428,6 +445,7 @@ describe("handleEscapes", () => {
         const unicodeMode = flags.includes("u");
         expect(
             handleEscapes({
+                captureList,
                 currentChar,
                 inCharacterSet: false,
                 index,
@@ -454,6 +472,7 @@ describe("handleEscapes", () => {
         const unicodeMode = flags.includes("u");
         expect(
             handleEscapes({
+                captureList,
                 currentChar,
                 inCharacterSet: false,
                 index,
@@ -479,6 +498,7 @@ describe("handleEscapes", () => {
         const nextChar = pattern[index + 1];
         expect(
             handleEscapes({
+                captureList,
                 currentChar,
                 inCharacterSet: false,
                 index,
@@ -644,6 +664,7 @@ describe("handleEscapes", () => {
         const unicodeMode = flags.includes("u");
         expect(
             handleEscapes({
+                captureList,
                 currentChar,
                 inCharacterSet: false,
                 index,
