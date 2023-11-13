@@ -302,7 +302,8 @@ function tokenize(regex) {
                 const closingBrace = pattern.indexOf("}", i + 1);
                 const betweenBraces = pattern.slice(i + 1, closingBrace);
                 const lastElement = last(last(stack));
-                const range = handleRange(lastElement, betweenBraces, i + 1);
+                const nextElement = pattern[closingBrace + 1];
+                const range = handleRange(lastElement, betweenBraces, i + 1, nextElement);
                 if (range.token) {
                     last(stack).push(range.token);
                 }

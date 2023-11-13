@@ -586,7 +586,7 @@ describe("tokenize", () => {
         test("should handle minimum quantifier", () => {
             expect(tokenize("a{2,}")).toEqual([
                 {
-                    quantifier: "atLeast2",
+                    quantifier: "atLeast2-greedy",
                     regex: "a{2,}",
                     type: "literal",
                     value: "\"a\" repeated at least 2 times",
@@ -596,7 +596,7 @@ describe("tokenize", () => {
         test("should handle minimum and maximum given", () => {
             expect(tokenize("a{2,5}")).toEqual([
                 {
-                    quantifier: "2to5",
+                    quantifier: "2to5-greedy",
                     regex: "a{2,5}",
                     type: "literal",
                     value: "\"a\" repeated at least 2 times and no more than 5 times",
