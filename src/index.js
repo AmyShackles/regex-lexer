@@ -54,6 +54,8 @@ function tokenize(regex) {
     } catch (e) {
         throw new Error(e.message);
     }
+    const namedCaptures = {};
+    const captures = [];
 
     const stack = [[]];
     /* 
@@ -84,9 +86,11 @@ function tokenize(regex) {
                 const nextChar = pattern[i + 1];
                 const unicodeMode = flags.includes("u");
                 const { index, token } = handleEscapes({
+                    captureList: captures,
                     currentChar,
                     inCharacterSet,
                     index: i,
+                    namedCaptures,
                     nextChar,
                     pattern,
                     unicodeMode,
@@ -244,6 +248,7 @@ function tokenize(regex) {
                             );
                             stack.push([
                                 {
+                                    captureName,
                                     quantifier: "exactlyOne",
                                     regex: `(?<${captureName}>`,
                                     type: "namedCapturingGroup",
@@ -286,6 +291,26 @@ function tokenize(regex) {
                     type: label.type,
                     value: states,
                 });
+                if (label.type === "capturingGroup" || label.type === "namedCapturingGroup") {
+                    captures.push({
+                        quantifier: label.quantifier,
+                        regex: `${label.regex}${states
+                            .map((s) => s.regex)
+                            .join("")})`,
+                        type: label.type,
+                        value: states,
+                    });
+                    if (label.type === "namedCapturingGroup") {
+                        namedCaptures[label.captureName] = {
+                            quantifier: label.quantifier,
+                            regex: `${label.regex}${states
+                                .map((s) => s.regex)
+                                .join("")})`,
+                            type: label.type,
+                            value: states,
+                        };
+                    }
+                }
                 i++;
                 break;
             }

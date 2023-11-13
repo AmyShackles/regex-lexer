@@ -81,6 +81,7 @@ describe("handleEscapes", () => {
         });
     });
     it("should handle \\B in a character set", () => {
+        // eslint-disable-next-line no-useless-escape
         const testRegex = /[\B]/gs;
         const { flags, pattern } = getPatternAndFlags(testRegex);
         const currentChar = pattern[2];
@@ -470,6 +471,169 @@ describe("handleEscapes", () => {
             },
         });
     });
+    it("should handle a hexadecimal value", () => {
+        const testRegex = /\x4a/gs;
+        const { pattern } = getPatternAndFlags(testRegex);
+        const currentChar = pattern[1];
+        const nextChar = pattern[2];
+        const index = 1;
+        expect(
+            handleEscapes({
+                currentChar,
+                inCharacterSet: false,
+                index,
+                nextChar,
+                pattern,
+                unicodeMode: false
+            })).toEqual({
+                index: index + 3,
+                token: {
+                    quantifier: "exactlyOne",
+                    regex: "\\x4a",
+                    type: "hexadecimal",
+                    value: "J"
+                }
+            });
+    });
+    describe("named backreference", () => {
+        it("should handle if there is no named capture group of that name", () => {
+            const testRegex = /\k<quote>/gs;
+            const { pattern } = getPatternAndFlags(testRegex);
+            const index = 1;
+            const currentChar = pattern[index];
+            const nextChar = pattern[index + 1];
+            const captureList = [];
+            const namedCaptures = {};
+            expect(
+                handleEscapes({
+                    captureList,
+                    currentChar,
+                    inCharacterSet: false,
+                    index,
+                    namedCaptures,
+                    nextChar,
+                    pattern,
+                    unicodeMode: false,
+                })
+            ).toEqual({
+                index: index + 1,
+                token: {
+                    quantifier: "exactlyOne",
+                    regex: "\\k",
+                    type: "literal",
+                    value: "k"
+                }
+            });
+        });
+        it("should handle if there is a named capture group of that name", () => {
+            const testRegex = /(?<quote>['"]).*\k<quote>/;
+            const { pattern } = getPatternAndFlags(testRegex);
+            const index = 17;
+            const currentChar = pattern[index];
+            const nextChar = pattern[index + 1];
+            const capture = {
+                quantifier: "exactlyOne",
+                regex: "(?<quote>['\"])",
+                type: "namedCapturingGroup",
+                value: [
+                    {
+                        quantifier: "exactlyOne",
+                        regex: "['\"]",
+                        type: "characterSet",
+                        value: [
+                            {
+                                quantifier: "exactlyOne",
+                                regex: "'",
+                                type: "literal",
+                                value: "'",
+                            },
+                            {
+                                quantifier: "exactlyOne",
+                                regex: "\"",
+                                type: "literal",
+                                value: "\"",
+                            }
+                        ]
+                    }
+                ]
+            };
+            const captureList = [capture];
+            const namedCaptures = {quote: capture};
+            // tokenize(pattern);
+            expect(handleEscapes({
+                captureList,
+                currentChar,
+                inCharacterSet: false,
+                index,
+                namedCaptures,
+                nextChar,
+                pattern,
+                unicodeMode: false,
+            })).toEqual({
+                index: pattern.length,
+                token: {
+                    quantifier: "exactlyOne",
+                    regex: "\\k<quote>",
+                    type: "namedBackreference",
+                    value: namedCaptures["quote"]
+                }
+            });
+        });
+        it("should treat an escaped k as a literal if not followed by a <", () => {
+            const testRegex = /(['"]).*\k/;
+            const { pattern } = getPatternAndFlags(testRegex);
+            const index = 9;
+            const currentChar = pattern[index];
+            const nextChar = pattern[index + 1];
+            const capture = {
+                quantifier: "exactlyOne",
+                regex: "(?<quote>['\"])",
+                type: "capturingGroup",
+                value: [
+                    {
+                        quantifier: "exactlyOne",
+                        regex: "['\"]",
+                        type: "characterSet",
+                        value: [
+                            {
+                                quantifier: "exactlyOne",
+                                regex: "'",
+                                type: "literal",
+                                value: "'",
+                            },
+                            {
+                                quantifier: "exactlyOne",
+                                regex: "\"",
+                                type: "literal",
+                                value: "\"",
+                            }
+                        ]
+                    }
+                ]
+            };
+            const captureList = [capture];
+            const namedCaptures = {};
+            // tokenize(pattern);
+            expect(handleEscapes({
+                captureList,
+                currentChar,
+                inCharacterSet: false,
+                index,
+                namedCaptures,
+                nextChar,
+                pattern,
+                unicodeMode: false,
+            })).toEqual({
+                index: index + 1,
+                token: {
+                    quantifier: "exactlyOne",
+                    regex: "\\k",
+                    type: "literal",
+                    value: "k"
+                }
+            });
+        });
+    });
     it("should treat everything else as an escaped character", () => {
         // eslint-disable-next-line no-useless-escape
         const testRegex = /\z/gs;
@@ -496,30 +660,5 @@ describe("handleEscapes", () => {
                 value: pattern[index],
             },
         });
-    });
-    it("should handle a hexadecimal value", () => {
-        const testRegex = /\x4a/gs;
-        const { pattern } = getPatternAndFlags(testRegex);
-        const currentChar = pattern[1];
-        const nextChar = pattern[2];
-        const index = 1;
-        expect(
-            handleEscapes({
-                currentChar,
-                inCharacterSet: false,
-                index,
-                nextChar,
-                pattern,
-                unicodeMode: false
-            })).toEqual({
-                index: index + 3,
-                token: {
-                    quantifier: "exactlyOne",
-                    regex: "\\x4a",
-                    type: "hexadecimal",
-                    value: "J"
-                }
-            });
-    
     });
 });

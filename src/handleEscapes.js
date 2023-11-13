@@ -2,20 +2,18 @@ const { getControlChar } = require("./getControlChar");
 const { getUnicode } = require("./getUnicode");
 const { getHexadecimal } = require("./getHexadecimal");
 const { getOctal } = require("./getOctal");
-const { getParenStack } = require("./getParenStack");
 
 const handleEscapes = ({
+    captureList,
     currentChar,
     index,
+    namedCaptures,
     nextChar,
     pattern,
     unicodeMode,
     inCharacterSet,
 }) => {
-    const captureRegex = /^(?<capture_group>(?:(?<named_capture>\(\?<.*?>.*?\))|(?<capture>\([^?][^:]?.*?\))))$/;
-    const captureList = getParenStack(pattern).filter((group) => captureRegex.test(group)
-    );
-    const numberOfBackreferences = captureList.length;
+    const numberOfBackreferences = captureList?.length;
 
     switch (currentChar) {
         case "0":
@@ -95,6 +93,38 @@ const handleEscapes = ({
                 },
             };
         };
+        case "k": {
+            if (nextChar === "<") {
+                const closingBracketIndex = pattern.indexOf(
+                    ">",
+                    index + 2,
+                );
+                /* istanbul ignore else */
+                if (closingBracketIndex !== -1) {
+                    const namedCapture = pattern.slice(index + 2, closingBracketIndex);
+                    if (namedCaptures[namedCapture] !== undefined) {
+                        return {
+                            index: closingBracketIndex + 1,
+                            token: {
+                                quantifier: "exactlyOne",
+                                regex: `\\k<${namedCapture}>`,
+                                type: "namedBackreference",
+                                value: namedCaptures[namedCapture]
+                            }
+                        };
+                    }
+                }
+            }
+            return {
+                index: index + 1,
+                token: {
+                    quantifier: "exactlyOne",
+                    regex: "\\k",
+                    type: "literal",
+                    value: "k"
+                }
+            };
+        }
         case "n": {
             return {
                 index: index + 1,
