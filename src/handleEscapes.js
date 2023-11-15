@@ -1,7 +1,7 @@
 const { getControlChar } = require("./getControlChar");
 const { getUnicode } = require("./getUnicode");
 const { getHexadecimal } = require("./getHexadecimal");
-const { getOctal } = require("./getOctal");
+const { handleEscapedNumber } = require("./handleEscapedNumber");
 
 const handleEscapes = ({
     captureList,
@@ -23,8 +23,10 @@ const handleEscapes = ({
         case "4":
         case "5":
         case "6":
-        case "7": {
-            const { nextIndex, token } = getOctal(
+        case "7": 
+        case "8":
+        case "9": {
+            const { nextIndex, token } = handleEscapedNumber(
                 captureList,
                 numberOfBackreferences,
                 pattern,

@@ -1,7 +1,7 @@
 const { getCharacter } = require("./getUnicodeCharacter");
 const { getControlCharacterType } = require("./getControlChar");
 
-const getOctal = (
+const handleEscapedNumber = (
     captureList,
     numberOfBackreferences,
     regex,
@@ -12,7 +12,6 @@ const getOctal = (
     const regexString = regex.slice(index);
     const number = getNumber(regexString);
     const length = number.length;
-    const octalNumber = parseInt(number, 8);
     if (number === "0")
         return {
             nextIndex: index + 1,
@@ -37,6 +36,19 @@ const getOctal = (
     if (unicodeMode) {
         throw new Error("Octal escapes are not valid in unicode mode");
     }
+    const octalNumber = parseInt(number, 8);
+    if (isNaN(octalNumber)) {
+        return {
+            nextIndex: index + 1,
+            token: {
+                quantifier: "exactlyOne",
+                regex: `\\${regex[index]}`,
+                type: "literal",
+                value: regex[index],
+            }
+        };
+    }
+
     if (octalNumber < 32) {
         const value = getControlCharacterType(octalNumber);
         return {
@@ -79,4 +91,4 @@ const getNumber = (regexString) => {
     return regexString.slice(0, 1);
 };
 
-module.exports = { getOctal };
+module.exports = { handleEscapedNumber };

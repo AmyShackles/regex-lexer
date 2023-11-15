@@ -1,15 +1,15 @@
-const { getOctal } = require("../src/getOctal.js");
-const { getParenStack} = require("../src/getParenStack");
+const { handleEscapedNumber } = require("../src/handleEscapedNumber.js");
+const { getParenStack} = require("../src/getParenStack.js");
 const { getPatternAndFlags } = require("../src/index.js");
 
-describe("getOctal", () => {
+describe("handleEscapedNumber", () => {
     it("should handle nul characters", () => {
         const testRegex = /\0/gs;
         const { flags, pattern } = getPatternAndFlags(testRegex);
         const captureRegex = /^(?<capture_group>(?:(?<named_capture>\(\?<.*?>.*?\))|(?<capture>\([^?][^:]?.*?\))))$/;
         const captureList = getParenStack(pattern).filter((group) => captureRegex.test(group));
         const numberOfBackreferences = captureList.length;
-        expect(getOctal(captureList, numberOfBackreferences, pattern, 1, flags.includes("u"))).toEqual({
+        expect(handleEscapedNumber(captureList, numberOfBackreferences, pattern, 1, flags.includes("u"))).toEqual({
             nextIndex: 2,
             token: { 
                 quantifier: "exactlyOne",
@@ -25,7 +25,7 @@ describe("getOctal", () => {
         const captureRegex = /^(?<capture_group>(?:(?<named_capture>\(\?<.*?>.*?\))|(?<capture>\([^?][^:]?.*?\))))$/;
         const captureList = getParenStack(pattern).filter((group) => captureRegex.test(group));
         const numberOfBackreferences = captureList.length;
-        expect(getOctal(captureList, numberOfBackreferences, pattern, 5, flags.includes("u"))).toEqual({
+        expect(handleEscapedNumber(captureList, numberOfBackreferences, pattern, 5, flags.includes("u"))).toEqual({
             nextIndex: 6,
             token: {
                 quantifier: "exactlyOne",
@@ -42,7 +42,7 @@ describe("getOctal", () => {
         const captureList = getParenStack(pattern).filter((group) => captureRegex.test(group));
         const numberOfBackreferences = captureList.length;
         function testError() {
-            getOctal(captureList, numberOfBackreferences, pattern, 1, true);
+            handleEscapedNumber(captureList, numberOfBackreferences, pattern, 1, true);
         }
         expect(testError).toThrowError(new Error("Octal escapes are not valid in unicode mode"));
     });
@@ -52,7 +52,7 @@ describe("getOctal", () => {
         const captureRegex = /^(?<capture_group>(?:(?<named_capture>\(\?<.*?>.*?\))|(?<capture>\([^?][^:]?.*?\))))$/;
         const captureList = getParenStack(pattern).filter((group) => captureRegex.test(group));
         const numberOfBackreferences = captureList.length;
-        expect(getOctal(captureList, numberOfBackreferences, pattern, 1, flags.includes("u"))).toEqual({
+        expect(handleEscapedNumber(captureList, numberOfBackreferences, pattern, 1, flags.includes("u"))).toEqual({
             nextIndex: 3,
             token: {
                 quantifier: "exactlyOne",
@@ -61,7 +61,7 @@ describe("getOctal", () => {
                 value: "lineFeed"
             }
         });
-        expect(getOctal([], 0, "\\7", 1, false)).toEqual({
+        expect(handleEscapedNumber([], 0, "\\7", 1, false)).toEqual({
             nextIndex: 2,
             token: {
                 quantifier: "exactlyOne",
@@ -70,7 +70,7 @@ describe("getOctal", () => {
                 value: "bell"
             }
         });
-        expect(getOctal([], 0, "\\4", 1, false)).toEqual({
+        expect(handleEscapedNumber([], 0, "\\4", 1, false)).toEqual({
             nextIndex: 2,
             token: {
                 quantifier: "exactlyOne",
@@ -80,13 +80,29 @@ describe("getOctal", () => {
             }
         });
     });
+    it("should handle non-octals", () => {
+        const testRegex = /\88/;
+        const { flags, pattern } = getPatternAndFlags(testRegex);
+        const captureRegex = /^(?<capture_group>(?:(?<named_capture>\(\?<.*?>.*?\))|(?<capture>\([^?][^:]?.*?\))))$/;
+        const captureList = getParenStack(pattern).filter((group) => captureRegex.test(group));
+        const numberOfBackreferences = captureList.length;
+        expect(handleEscapedNumber(captureList, numberOfBackreferences, pattern, 1, flags.includes("u"))).toEqual({
+            nextIndex: 2,
+            token: {
+                quantifier: "exactlyOne",
+                regex: "\\8",
+                type: "literal",
+                value: "8"
+            }
+        });
+    });
     it("should handle two-digit octals", () => {
         const testRegex = /\77/;
         const { flags, pattern } = getPatternAndFlags(testRegex);
         const captureRegex = /^(?<capture_group>(?:(?<named_capture>\(\?<.*?>.*?\))|(?<capture>\([^?][^:]?.*?\))))$/;
         const captureList = getParenStack(pattern).filter((group) => captureRegex.test(group));
         const numberOfBackreferences = captureList.length;
-        expect(getOctal(captureList, numberOfBackreferences, pattern, 1, flags.includes("u"))).toEqual({
+        expect(handleEscapedNumber(captureList, numberOfBackreferences, pattern, 1, flags.includes("u"))).toEqual({
             nextIndex: 3,
             token: {
                 quantifier: "exactlyOne",
@@ -95,7 +111,7 @@ describe("getOctal", () => {
                 value: "?"
             }
         });
-        expect(getOctal([], 0, "\\27", 1, flags.includes("u"))).toEqual({
+        expect(handleEscapedNumber([], 0, "\\27", 1, flags.includes("u"))).toEqual({
             nextIndex: 3,
             token: {
                 quantifier: "exactlyOne",
@@ -111,7 +127,7 @@ describe("getOctal", () => {
         const captureRegex = /^(?<capture_group>(?:(?<named_capture>\(\?<.*?>.*?\))|(?<capture>\([^?][^:]?.*?\))))$/;
         const captureList = getParenStack(pattern).filter((group) => captureRegex.test(group));
         const numberOfBackreferences = captureList.length;
-        expect(getOctal(captureList, numberOfBackreferences, pattern, 1, flags.includes("u"))).toEqual({
+        expect(handleEscapedNumber(captureList, numberOfBackreferences, pattern, 1, flags.includes("u"))).toEqual({
             nextIndex: 4,
             token: {
                 quantifier: "exactlyOne",
@@ -120,7 +136,7 @@ describe("getOctal", () => {
                 value: "ÿ"
             }
         });
-        expect(getOctal([], 0, "\\376", 1, false)).toEqual({
+        expect(handleEscapedNumber([], 0, "\\376", 1, false)).toEqual({
             nextIndex: 4,
             token: {
                 quantifier: "exactlyOne",
